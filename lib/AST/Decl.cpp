@@ -102,6 +102,12 @@ std::vector<const EventDecl *> ContractDecl::getEvents() const {
   return Nodes;
 }
 
+void ContractDecl::resolveLLVMFuncName() {
+  LLVMMainFuncName = getUniqueName().str() + ".<main>";
+  LLVMContractFuncName = getUniqueName().str() + ".<contract>";
+  LLVMCtorFuncName = getUniqueName().str() + ".<ctor>";
+}
+
 FunctionDecl *ContractDecl::getConstructor() { return Constructor.get(); }
 
 const FunctionDecl *ContractDecl::getConstructor() const {
@@ -195,8 +201,7 @@ EventDecl::EventDecl(SourceRange L, llvm::StringRef Name,
 }
 
 StructDecl::StructDecl(SourceRange L, llvm::StringRef Name,
-                       std::vector<TypePtr> &&ET,
-                       std::vector<std::string> &&EN)
+                       std::vector<TypePtr> &&ET, std::vector<std::string> &&EN)
     : Decl(L, Name, Visibility::Default),
       Ty(std::make_shared<StructType>(std::move(ET), std::move(EN))) {
   auto STy = dynamic_cast<const StructType *>(Ty.get());
